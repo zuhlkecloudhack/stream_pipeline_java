@@ -45,4 +45,4 @@ gcloud beta pubsub topics publish <your topic name> --message '
 #### Results
 After starting the pipeline and submitting messages to the topic you should check the corresponding Google Cloud Dataflow job and see something similar to this:
 
-![pipeline result](https://raw.githubusercontent.com/zuhlkecloudhack/stream_pipeline_java/master/src/main/resources/cloud-dataflow-streaming-pipeline.png "Cloud Dataflow Pipeline")
+![pipeline result](https://github.com/zuhlkecloudhack/stream_pipeline_java/raw/master/src/main/resources/cloud-dataflow-streaming-pipeline.png "Cloud Dataflow Pipeline")
