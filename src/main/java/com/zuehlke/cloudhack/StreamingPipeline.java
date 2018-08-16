@@ -29,6 +29,7 @@ public class StreamingPipeline {
     private static final String OUTPUT_TOPIC = "projects/zuhlkecloudhack/topics/test456";
     private static final String OUTPUT_DATASET = "cloudhack.flight_messages_java_pipeline";
     private static final String OUTPUT_GCS_PATH = "gs://flight_messages/java_pipeline/message";
+    private static final String FILE_WRITTEN_RESPONSE = "file written to GCS";
 
     public static void main(String[] args) {
         LOG.info("Starting Streaming Pipeline");
@@ -69,7 +70,7 @@ public class StreamingPipeline {
 
     private static PubsubMessage createMessageFor(String filename) {
         Map<String, String> attrs = Collections.singletonMap("filename", filename);
-        return new PubsubMessage(null, attrs);
+        return new PubsubMessage(FILE_WRITTEN_RESPONSE.getBytes(), attrs);
     }
 
     private static Window<String> assignMessageWindowFn() {
@@ -78,7 +79,9 @@ public class StreamingPipeline {
                 .triggering(AfterWatermark.pastEndOfWindow()
                         .withEarlyFirings(AfterPane.elementCountAtLeast(1))
                         .withLateFirings(AfterFirst.of(
-                                AfterPane.elementCountAtLeast(1), AfterProcessingTime.pastFirstElementInPane().plusDelayOf(Duration.standardSeconds(1))
+                                AfterPane.elementCountAtLeast(1),
+                                AfterProcessingTime.pastFirstElementInPane()
+                                        .plusDelayOf(Duration.standardSeconds(1))
                         )))
                 .discardingFiredPanes();
     }
