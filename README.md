@@ -1,6 +1,6 @@
 stream_pipeline_java
 ---------------------
-Streaming Pipeline for Zühlke's Cloud Challenge. This example illustrates the Java SDK for [Apache Beam](https://beam.apache.org/). It sets up a streaming pipeline listening to events on a [Google Pub/Sub](https://cloud.google.com/pubsub/) topic, writes incoming events to [Google Cloud Storage](https://cloud.google.com/storage/) and [Google BigQuery](https://cloud.google.com/bigquery/) and sends a response to another Google Pub/Sub topic.
+Streaming Pipeline for Zühlke's Cloud Challenge. This example illustrates the Java SDK for [Apache Beam](https://beam.apache.org/). It sets up a streaming pipeline executing on [Google Cloud Dataflow](https://cloud.google.com/dataflow/) which listens to events on a [Google Pub/Sub](https://cloud.google.com/pubsub/) topic, writes incoming events to [Google Cloud Storage](https://cloud.google.com/storage/) and [Google BigQuery](https://cloud.google.com/bigquery/) and sends a response to another Google Pub/Sub topic.
 
 
 #### Preconditions:
@@ -41,3 +41,8 @@ gcloud beta pubsub topics publish <your topic name> --message '
     "timestamp" : "2012-04-23T18:25:43.511Z"
 }'
 ```
+
+#### Results
+After starting the pipeline and submitting messages to the topic you should check the corresponding Google Cloud Dataflow job and see something similar to this:
+
+![pipeline result](https://raw.githubusercontent.com/zuhlkecloudhack/stream_pipeline_java/master/src/main/resources/cloud-dataflow-streaming-pipeline.png "Cloud Dataflow Pipeline")
