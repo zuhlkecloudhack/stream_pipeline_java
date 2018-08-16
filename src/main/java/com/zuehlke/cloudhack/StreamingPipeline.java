@@ -30,23 +30,15 @@ public class StreamingPipeline {
     private static final String OUTPUT_DATASET = "cloudhack.flight_messages_java_pipeline";
     private static final String OUTPUT_GCS_PATH = "gs://flight_messages/java_pipeline/message";
 
-    private String inputTopic;
-    private String outputTopic;
-
-    private StreamingPipeline(String inputTopic, String outputTopic) {
-        this.inputTopic = inputTopic;
-        this.outputTopic = outputTopic;
-    }
-
     public static void main(String[] args) {
         LOG.info("Starting Streaming Pipeline");
-        StreamingPipeline sp = new StreamingPipeline(INPUT_TOPIC, OUTPUT_TOPIC);
 
         PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
         Pipeline p = Pipeline.create(options);
+        StreamingPipeline sp = new StreamingPipeline();
 
         // read from pub-sub topic
-        PCollection<String> messages = p.apply("read event from pub-sub", PubsubIO.readStrings().fromTopic(sp.getInputTopic()));
+        PCollection<String> messages = p.apply("read event from pub-sub", PubsubIO.readStrings().fromTopic(INPUT_TOPIC));
 
         // write messages to GCS
         messages.apply("grouping messages to windows", assignMessageWindowFn())
@@ -55,7 +47,7 @@ public class StreamingPipeline {
 
                 // write notification to pub-sub
                 .apply("map to response message", createPubsubResponseFn())
-                .apply("write response to pub/sub", PubsubIO.writeMessages().to(sp.getOutputTopic()));
+                .apply("write response to pub/sub", PubsubIO.writeMessages().to(OUTPUT_TOPIC));
 
         // write messages to BQ
         messages
@@ -97,13 +89,5 @@ public class StreamingPipeline {
                 .withSchema(FlightMessage.getTableSchema())
                 .withCreateDisposition(BigQueryIO.Write.CreateDisposition.CREATE_IF_NEEDED)
                 .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND);
-    }
-
-    private String getInputTopic() {
-        return inputTopic;
-    }
-
-    private String getOutputTopic() {
-        return outputTopic;
     }
 }
