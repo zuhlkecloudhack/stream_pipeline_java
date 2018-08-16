@@ -32,13 +32,12 @@ To run the pipeline on [Google Cloud Dataflow](https://cloud.google.com/dataflow
 
 #### Publish message into topic:
 The pipeline listens for incoming events on a pub/sub topic. In order to publish messages to this topic use the gcloud command line interface.
-```
+```bash
 gcloud beta pubsub topics publish <your topic name> --message '
 {
-"flight-number" : "CH5634",
-"message" : "Fly me to the moon",
-"message-type" : "INFO",
-"timestamp" : "2012-04-23T18:25:43.511Z"
-}
-'
+    "flight-number" : "CH5634",
+    "message" : "Fly me to the moon",
+    "message-type" : "INFO",
+    "timestamp" : "2012-04-23T18:25:43.511Z"
+}'
 ```
