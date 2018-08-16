@@ -25,10 +25,16 @@ import java.util.Map;
 public class StreamingPipeline {
 
     private static final Logger LOG = LogManager.getLogger(StreamingPipeline.class.getName());
+
+    // pub/sub topic to read events from
     private static final String INPUT_TOPIC = "projects/zuhlkecloudhack/topics/test123";
+    // pub/sub topic to write responses to
     private static final String OUTPUT_TOPIC = "projects/zuhlkecloudhack/topics/test456";
+    // bigquery dataset and table to write the pub/sub events to
     private static final String OUTPUT_DATASET = "cloudhack.flight_messages_java_pipeline";
+    // GCS path to write the pub/sub events to
     private static final String OUTPUT_GCS_PATH = "gs://flight_messages/java_pipeline/message";
+    // message body of the response message written to pub/sub
     private static final String FILE_WRITTEN_RESPONSE = "file written to GCS";
 
     public static void main(String[] args) {
@@ -36,7 +42,6 @@ public class StreamingPipeline {
 
         PipelineOptions options = PipelineOptionsFactory.fromArgs(args).create();
         Pipeline p = Pipeline.create(options);
-        StreamingPipeline sp = new StreamingPipeline();
 
         // read from pub-sub topic
         PCollection<String> messages = p.apply("read event from pub-sub", PubsubIO.readStrings().fromTopic(INPUT_TOPIC));
@@ -53,7 +58,7 @@ public class StreamingPipeline {
         // write messages to BQ
         messages
                 .apply("convert messages to table rows", ParDo.of(new MessageToTableRowConverter()))
-                .apply("insert into BigQuery", sp.writeToBigQuery());
+                .apply("insert into BigQuery", writeToBigQuery());
 
 
         PipelineResult result = p.run();
@@ -86,7 +91,7 @@ public class StreamingPipeline {
                 .discardingFiredPanes();
     }
 
-    private BigQueryIO.Write<TableRow> writeToBigQuery() {
+    private static BigQueryIO.Write<TableRow> writeToBigQuery() {
         return BigQueryIO.writeTableRows()
                 .to(OUTPUT_DATASET)
                 .withSchema(FlightMessage.getTableSchema())
